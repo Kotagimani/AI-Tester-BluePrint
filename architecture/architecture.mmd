@@ -1,0 +1,57 @@
+flowchart TB
+    subgraph Client ["Frontend (React/Vite)"]
+        UI[User Interface]
+        API_Service[API Service Layer]
+        State[React State & Context]
+    end
+
+    subgraph Server ["Backend (Node.js/Express)"]
+        Router[Express Router]
+        Controllers[Controllers]
+        
+        subgraph Services
+            JiraService[JIRA Service]
+            GroqService[Groq LLM Service]
+            OllamaService[Ollama LLM Service]
+        end
+        
+        subgraph Data ["Data Layer"]
+            SQLite[(SQLite Database)]
+            Encryption[Encryption Utils]
+        end
+    end
+
+    subgraph External ["External Services"]
+        JIRA_API[Atlassian JIRA API]
+        Groq_API[Groq Cloud API]
+        Ollama_Local[Local Ollama Instance]
+    end
+
+    %% Frontend Interactions
+    UI -->|User Actions| State
+    State -->|Requests| API_Service
+    API_Service -->|HTTP/JSON| Router
+
+    %% Backend Flow
+    Router -->|Route Handling| Controllers
+    Controllers -->|Business Logic| Services
+    
+    %% Service Integrations
+    JiraService -->|Fetch Tickets| JIRA_API
+    GroqService -->|Generate Plan| Groq_API
+    OllamaService -->|Generate Plan| Ollama_Local
+    
+    %% Data Persistence
+    Controllers -->|Read/Write| SQLite
+    SQLite <-->|Encrypt/Decrypt| Encryption
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef backend fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef external fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef database fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+
+    class UI,API_Service,State frontend;
+    class Router,Controllers,JiraService,GroqService,OllamaService backend;
+    class JIRA_API,Groq_API,Ollama_Local external;
+    class SQLite,Encryption database;
